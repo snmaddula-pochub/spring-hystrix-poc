@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 
 @RestController
 public class SimpleController {
@@ -24,7 +25,11 @@ public class SimpleController {
 	}
 
 	@GetMapping("/hello")
-	@HystrixCommand(fallbackMethod="helloFailOver")
+	@HystrixCommand(
+		fallbackMethod="helloFailOver", 
+		commandProperties = {
+			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")
+	})
 	public String hello() {
 		return restTemplate.getForObject(first, String.class);
 	}
